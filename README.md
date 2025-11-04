@@ -298,6 +298,7 @@ module.exports = [
     {
         entry: "./src/sidePanelIndex.tsx",
         mode: "production",
+        stats: 'errors-only',
         cache: {
             type: 'filesystem',
             buildDependencies: {
@@ -406,11 +407,23 @@ module.exports = [
                     },
                 ],
             }),
+            // new ForkTsCheckerWebpackPlugin({
+            //     typescript: {
+            //         configFile: path.resolve(__dirname, "tsconfig.json"),
+            //     },
+            //     async: false,
+            //     logger: {
+            //         infrastructure: 'silent',
+            //         issues: 'console'
+            //     }
+            // }),
         ],
+        
     },
     {
         entry: "./src/index.tsx",
         mode: "production",
+        stats: 'errors-only',
         cache: {
             type: 'filesystem',
             buildDependencies: {
@@ -505,6 +518,7 @@ module.exports = [
     {
         entry: "./src/extension/serviceWorker.ts",
         mode: "production",
+        stats: 'errors-only',
         cache: {
             type: 'filesystem',
             buildDependencies: {
