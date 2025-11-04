@@ -222,7 +222,7 @@ npm run build
 
 ---
 
-## Complete webpack.config.js Example
+## Complete webpack.config.js for snippet only Example
 
 ```javascript
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -273,6 +273,284 @@ module.exports = [
         },
         output: {
             filename: "snippet.js",
+            path: path.resolve(__dirname, "extension"),
+            publicPath: path.resolve(__dirname, "extension"),
+        },
+        plugins: [
+            new Dotenv(),
+        ]
+    },
+];
+```
+
+## Complete webpack.config.js for extention only Example
+
+```javascript
+/* eslint-disable @typescript-eslint/no-var-requires */
+const CopyPlugin = require("copy-webpack-plugin");
+const path = require("path");
+const RemovePlugin = require("remove-files-webpack-plugin");
+const Dotenv = require('dotenv-webpack');
+const os = require('os');
+const { EsbuildPlugin } = require('esbuild-loader');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+module.exports = [
+    {
+        entry: "./src/sidePanelIndex.tsx",
+        mode: "production",
+        cache: {
+            type: 'filesystem',
+            buildDependencies: {
+                config: [__filename]
+            }
+        },
+        parallelism: os.cpus().length,
+        optimization: {
+            splitChunks: false,
+            minimizer: [
+                new EsbuildPlugin({
+                    target: 'es2015',
+                    css: true
+                })
+            ]
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.tsx?$/,
+                    loader: "esbuild-loader",
+                    options: {
+                        loader: 'tsx',
+                        target: 'es2015',
+                        tsconfigRaw: require('./tsconfig.json')
+                    },
+                    exclude: /node_modules/,
+                },
+                {
+                    test: /\.(scss|css)$/i,
+                    use: [{
+                        loader: "style-loader",
+                        options: {
+                            attributes: {
+                                "desk-compass-style": true
+                            },
+                        }
+                    }, {
+                        loader: "css-loader",
+                        options: {
+                            modules: {
+                                localIdentName: "[name]__[local]--[hash:base64:5]_sp",
+                                auto: (resourcePath) => {
+                                    return resourcePath.endsWith(".module.css");
+                                }
+                            },
+                        },
+                    },
+                    {
+                        loader: "postcss-loader"
+                    },
+                    {
+                        loader: "sass-loader"
+                    }],
+                },
+                { test: /\.svg$/, loader: "svg-inline-loader" },
+                {
+                    test: /\.(svg|png|jpg|jpeg|gif)$/,
+                    use: {
+                        loader: "file-loader",
+                        options: {
+                            name: "[path][name].[ext]",
+                        }
+                    }
+                }
+            ],
+        },
+        resolve: {
+            extensions: [".tsx", ".ts", ".js"],
+            alias: {
+                components: path.resolve(__dirname, "src/components"),
+                styles: path.resolve(__dirname, "src/styles"),
+                pages: path.resolve(__dirname, "src/pages"),
+                models: path.resolve(__dirname, "src/models"),
+                configs: path.resolve(__dirname, "src/configs"),
+                services: path.resolve(__dirname, "src/services"),
+                utils: path.resolve(__dirname, "src/utils"),
+                libraries: path.resolve(__dirname, "src/libraries"),
+            }
+        },
+        output: {
+            filename: "sidePanel.js",
+            path: path.resolve(__dirname, "extension/sidePanel"),
+            publicPath: path.resolve(__dirname, "extension/sidePanel"),
+        },
+        plugins: [
+            new Dotenv(),
+            new RemovePlugin({
+                before: {
+                    root: path.resolve(__dirname, "extension"),
+                    test: [
+                        {
+                            folder: "./public",
+                            method: () => true,
+                            recursive: true
+                        }
+                    ],
+                },
+            }),
+            new CopyPlugin({
+                patterns: [
+                    {
+                        from: "./public/assets",
+                        to: path.resolve(__dirname, "extension/public/assets"),
+                        noErrorOnMissing: true,
+                    },
+                ],
+            }),
+        ],
+    },
+    {
+        entry: "./src/index.tsx",
+        mode: "production",
+        cache: {
+            type: 'filesystem',
+            buildDependencies: {
+                config: [__filename]
+            }
+        },
+        parallelism: os.cpus().length,
+        optimization: {
+            splitChunks: false,
+            minimizer: [
+                new EsbuildPlugin({
+                    target: 'es2015',
+                    css: true
+                })
+            ]
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.tsx?$/,
+                    loader: "esbuild-loader",
+                    options: {
+                        loader: 'tsx',
+                        target: 'es2015',
+                        tsconfigRaw: require('./tsconfig.json')
+                    },
+                    exclude: /node_modules/,
+                },
+                {
+                    test: /\.(scss|css)$/i,
+                    use: [{
+                        loader: "style-loader",
+                        options: {
+                            attributes: {
+                                "s7-style": true
+                            },
+                            injectType: "singletonStyleTag",
+                            insert: require.resolve("./insert-function.js"),
+                        }
+                    }, {
+                        loader: "css-loader",
+                        options: {
+                            modules: {
+                                localIdentName: "[name]__[local]--[hash:base64:5]_id",
+                                auto: (resourcePath) => {
+                                    return resourcePath.endsWith(".module.css");
+                                }
+                            },
+                        },
+                    },
+                    {
+                        loader: "postcss-loader"
+                    },
+                    {
+                        loader: "sass-loader"
+                    }],
+                },
+                { test: /\.svg$/, loader: "svg-inline-loader" },
+                {
+                    test: /\.(svg|png|jpg|jpeg|gif)$/,
+                    use: {
+                        loader: "file-loader",
+                        options: {
+                            name: "[path][name].[ext]",
+                        }
+                    }
+                }
+            ],
+        },
+        resolve: {
+            extensions: [".tsx", ".ts", ".js"],
+            alias: {
+                components: path.resolve(__dirname, "src/components"),
+                styles: path.resolve(__dirname, "src/styles"),
+                pages: path.resolve(__dirname, "src/pages"),
+                models: path.resolve(__dirname, "src/models"),
+                configs: path.resolve(__dirname, "src/configs"),
+                services: path.resolve(__dirname, "src/services"),
+                utils: path.resolve(__dirname, "src/utils"),
+                libraries: path.resolve(__dirname, "src/libraries"),
+            }
+        },
+        output: {
+            filename: "content.js",
+            path: path.resolve(__dirname, "extension"),
+            publicPath: path.resolve(__dirname, "extension"),
+        },
+        plugins: [
+            new Dotenv(),
+        ]
+    },
+    {
+        entry: "./src/extension/serviceWorker.ts",
+        mode: "production",
+        cache: {
+            type: 'filesystem',
+            buildDependencies: {
+                config: [__filename]
+            }
+        },
+        parallelism: os.cpus().length,
+        optimization: {
+            splitChunks: false,
+            minimizer: [
+                new EsbuildPlugin({
+                    target: 'es2015',
+                    css: true
+                })
+            ]
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.ts?$/,
+                    loader: "esbuild-loader",
+                    options: {
+                        loader: 'ts',
+                        target: 'es2015',
+                        tsconfigRaw: require('./tsconfig.json')
+                    },
+                    exclude: /node_modules/,
+                }
+            ],
+        },
+        resolve: {
+            extensions: [".ts", ".js"],
+            alias: {
+                components: path.resolve(__dirname, "src/components"),
+                styles: path.resolve(__dirname, "src/styles"),
+                pages: path.resolve(__dirname, "src/pages"),
+                models: path.resolve(__dirname, "src/models"),
+                configs: path.resolve(__dirname, "src/configs"),
+                services: path.resolve(__dirname, "src/services"),
+                utils: path.resolve(__dirname, "src/utils"),
+                libraries: path.resolve(__dirname, "src/libraries"),
+                extension: path.resolve(__dirname, "src/extension"),
+            }
+        },
+        output: {
+            filename: "service-worker.js",
             path: path.resolve(__dirname, "extension"),
             publicPath: path.resolve(__dirname, "extension"),
         },
