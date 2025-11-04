@@ -283,7 +283,7 @@ module.exports = [
 ];
 ```
 
-## Complete webpack.config.js for extention only Example
+## Complete webpack.config.js for extension only Example
 
 ```javascript
 /* eslint-disable @typescript-eslint/no-var-requires */
