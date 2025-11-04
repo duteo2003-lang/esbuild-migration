@@ -121,6 +121,77 @@ async function handleResponse<T>(
 }
 ```
 
+**FlowGuideRow.tsx**
+line 94
+```typescript
+        // DND Setup - Call useSortable first
+        const sortableState = useSortable({
+            id: id,
+            animateLayoutChanges: ({ isSorting: sortingState }) => sortingState,
+        });
+        // Safely destructure after the hook completes
+        const {
+            attributes,
+            listeners,
+            setNodeRef,
+            transform,
+            transition,
+            isDragging,
+            isSorting,
+            over,
+            active,
+            index,
+        } = sortableState;
+```
+
+**FolderCollapse.tsx**
+line 85
+```typescript
+        // DND Setup - Call useSortable first
+        const sortableState = useSortable({
+            id: id,
+            disabled: !isDragEnabled || isEditingTitle, // Disable drag during editing
+            animateLayoutChanges: ({ isSorting: sortingState }) => sortingState,
+        });
+
+        // Safely destructure after the hook completes
+        const {
+            attributes,
+            listeners,
+            setNodeRef,
+            transform,
+            transition,
+            isDragging,
+            isSorting,
+            over,
+            index,
+            active,
+        } = sortableState;
+```
+**NoteRow.tsx**
+line 94
+```typescript
+        // DND Setup - Call useSortable first
+        const sortableState = useSortable({
+            id: id,
+            animateLayoutChanges: ({ isSorting: sortingState }) => sortingState,
+        });
+
+        // Safely destructure after the hook completes
+        const {
+            attributes,
+            listeners,
+            setNodeRef,
+            transform,
+            transition,
+            isDragging,
+            isSorting,
+            over,
+            active,
+            index,
+        } = sortableState;
+```
+
 **Why**: 
 - In `.tsx` files, esbuild sees `<T>` as a JSX tag opening, not a generic type parameter
 - Regular function declarations don't have this ambiguity
